@@ -26,7 +26,7 @@ function adminic_toolbar_toolbar() {
           'title' => t('Return to site content'),
           'class' => ['front', 'toolbar-icon', 'toolbar-icon-escape-admin'],
         ],
-        '#cache' => [
+        '#cache'      => [
           'contexts' => ['user',],
         ],
       ],
@@ -47,7 +47,7 @@ function adminic_toolbar_toolbar() {
           'title' => t('My account'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-content'],
         ],
-        '#cache' => [
+        '#cache'      => [
           'contexts' => ['user',],
         ],
       ],
@@ -63,40 +63,44 @@ function adminic_toolbar_toolbar() {
     ];
 
     // Modules.
-    $items['adminic_extend'] = [
-      '#type'   => 'toolbar_item',
-      'tab'     => [
-        '#type'       => 'link',
-        '#title'      => t('Extend'),
-        '#url'        => Url::fromUserInput('/admin/modules'),
-        '#attributes' => [
-          'title' => t('Modules'),
-          'class' => ['toolbar-icon', 'toolbar-icon-adminic-extend'],
+    if ($user->hasPermission('administer modules')) {
+      $items['adminic_extend'] = [
+        '#type'   => 'toolbar_item',
+        'tab'     => [
+          '#type'       => 'link',
+          '#title'      => t('Extend'),
+          '#url'        => Url::fromUserInput('/admin/modules'),
+          '#attributes' => [
+            'title' => t('Modules'),
+            'class' => ['toolbar-icon', 'toolbar-icon-adminic-extend'],
+          ],
+          '#cache'      => [
+            'contexts' => ['user',],
+          ],
         ],
-        '#cache' => [
-          'contexts' => ['user',],
-        ],
-      ],
-      '#weight' => 80,
-    ];
+        '#weight' => 80,
+      ];
+    }
 
     // Themes.
-    $items['adminic_appearance'] = [
-      '#type'   => 'toolbar_item',
-      'tab'     => [
-        '#type'       => 'link',
-        '#title'      => t('Appearance'),
-        '#url'        => Url::fromUserInput('/admin/appearance'),
-        '#attributes' => [
-          'title' => t('Appearance'),
-          'class' => ['toolbar-icon', 'toolbar-icon-adminic-appearance'],
+    if ($user->hasPermission('administer themes')) {
+      $items['adminic_appearance'] = [
+        '#type'   => 'toolbar_item',
+        'tab'     => [
+          '#type'       => 'link',
+          '#title'      => t('Appearance'),
+          '#url'        => Url::fromUserInput('/admin/appearance'),
+          '#attributes' => [
+            'title' => t('Appearance'),
+            'class' => ['toolbar-icon', 'toolbar-icon-adminic-appearance'],
+          ],
+          '#cache'      => [
+            'contexts' => ['user',],
+          ],
         ],
-        '#cache' => [
-          'contexts' => ['user',],
-        ],
-      ],
-      '#weight' => 81,
-    ];
+        '#weight' => 81,
+      ];
+    }
 
     // Config Administration.
     $items['adminic_config'] = [
@@ -109,7 +113,7 @@ function adminic_toolbar_toolbar() {
           'title' => t('Config'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
         ],
-        '#cache' => [
+        '#cache'      => [
           'contexts' => ['user',],
         ],
       ],
@@ -132,11 +136,11 @@ function adminic_toolbar_toolbar() {
 
 /**
  * Implements hook_toolbar_alter();
+ *
  * @param $items
  */
 function adminic_toolbar_toolbar_alter(&$items) {
   unset($items['home']);
-  //unset($items['contextual']);
   unset($items['admin_toolbar_tools']);
   $items['user']['#wrapper_attributes']['class'][] = 'right';
   foreach ($items as $key => $tab) {
@@ -154,7 +158,7 @@ function adminic_toolbar_toolbar_alter(&$items) {
   $items['coffee']['#weight'] = 13;
   $items['contextual']['#weight'] = 99;
   $items['user']['#weight'] = 99;
-  $items['admin_toolbar_tools']['tab']['#title'] = t('Tools');
+  $items['admin_toolbar_tools']['#wrapper_attributes']['class'][] = 'hidden';
 }
 
 /**

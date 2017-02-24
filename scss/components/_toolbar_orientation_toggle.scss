@@ -1,0 +1,7 @@
+@import "../variables";
+@import "../mixins";
+@import "../libraries/bourbon/bourbon";
+
+.toolbar-toggle-orientation {
+  display: none !important;
+}

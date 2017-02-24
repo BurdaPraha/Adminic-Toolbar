@@ -1,0 +1,155 @@
+@import "../variables";
+@import "../mixins";
+@import "../libraries/bourbon/bourbon";
+
+.toolbar-lining {
+  padding: 1.3rem 1rem;
+  a {
+    color: $font-color;
+    text-decoration: none;
+    display: block;
+    &:hover {
+      text-decoration: none;
+      color: darken($primary-color-dark, 20%);
+    }
+  }
+  .open > .toolbar-box {
+    a {
+      color: $primary-color-dark;
+      //font-weight: bold;
+    }
+  }
+  .toolbar-icon {
+    &:before {
+      content: '';
+      display: block;
+      width: 1.3rem;
+      height: 1.3rem;
+      position: absolute;
+      padding: 0 !important;
+      top: .5rem;
+      left: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      opacity: .7;
+    }
+  }
+
+  ul {
+    margin: 0 !important;
+    padding: 0 !important;
+    li {
+      list-style: none;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      border-bottom: 1px solid darken($primary-color-lighten, 3%);
+      a {
+        text-transform: uppercase;
+        margin-right: 1.5rem;
+        padding: .7rem 0;
+        line-height: 130%;
+      }
+      a.list-url {
+        margin-right: 2.5rem;
+      }
+      .toolbar-icon {
+        margin-left: 2rem;
+      }
+      ul {
+        li {
+          border-bottom: none;
+          a {
+            font-size: .9em;
+          }
+        }
+        padding-bottom: .5rem !important;
+      }
+    }
+  }
+  .menu-item--collapsed {
+    > ul {
+      display: none;
+    }
+    &.open {
+      > ul {
+        display: block;
+      }
+    }
+  }
+  .menu-item--expanded {
+    > ul {
+      display: none;
+    }
+    &.open {
+      > ul {
+        display: block;
+      }
+    }
+  }
+}
+
+.toolbar-lining {
+  .content {
+    margin-bottom: 1rem;
+  }
+  h4 {
+    font-size: .7rem;
+    font-weight: normal;
+    padding: 0;
+    margin: 0 0 .5rem 0;
+
+    color: $primary-color-dark;
+    text-transform: uppercase;
+    position: relative;
+    a {
+      color: inherit;
+      display: inline-block;
+    }
+    .actions {
+      top: 0;
+    }
+  }
+}
+
+
+
+.toolbar-icon-system-admin-content:before {
+  background-image: url(../images/content.svg);
+}
+
+.toolbar-icon-system-admin-structure:before {
+  background-image: url(../images/structure.svg);
+}
+
+.toolbar-icon-system-themes-page:before {
+  background-image: url(../images/appearance.svg);
+}
+
+.toolbar-icon-system-modules-list:before {
+  background-image: url(../images/extend.svg);
+}
+
+.toolbar-icon-system-admin-config:before {
+  background-image: url(../images/configuration.svg);
+}
+
+.toolbar-icon-entity-user-collection:before {
+  background-image: url(../images/people.svg);
+}
+
+.toolbar-icon-system-admin-reports:before {
+  background-image: url(../images/reports.svg);
+}
+
+.toolbar-icon-help-main:before {
+  background-image: url(../images/help.svg);
+}
+
+.toolbar-icon-admin-toolbar-tools-help {
+  text-indent: 0 !important;
+  &:before {
+    background-image: url(../images/tools.svg) !important;
+  }
+}

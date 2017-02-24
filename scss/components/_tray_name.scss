@@ -1,0 +1,14 @@
+@import "../variables";
+@import "../mixins";
+@import "../libraries/bourbon/bourbon";
+
+.toolbar-tray-name {
+  font-size: .7rem;
+  position: relative !important;
+  height: auto;
+  width: 100%;
+  clip: auto;;
+  margin: 0 0 .5rem 0;
+  color: $white;
+  text-transform: uppercase;
+}

@@ -4,13 +4,18 @@ use Drupal\Core\Url;
 
 include 'adminic_toolbar.inc';
 
+/**
+ * Implements hook_toolbar();
+ *
+ * @return array|null
+ */
 function adminic_toolbar_toolbar() {
   $user = \Drupal::currentUser();
-
   if ($user->hasPermission('access toolbar')) {
 
     $items = [];
 
+    // Home Button.
     $items['adminic_home'] = [
       '#type'               => 'toolbar_item',
       'tab'                 => [
@@ -21,6 +26,9 @@ function adminic_toolbar_toolbar() {
           'title' => t('Return to site content'),
           'class' => ['front', 'toolbar-icon', 'toolbar-icon-escape-admin'],
         ],
+        '#cache' => [
+          'contexts' => ['user',],
+        ],
       ],
       '#wrapper_attributes' => [
         'class' => [],
@@ -28,6 +36,7 @@ function adminic_toolbar_toolbar() {
       '#weight'             => -99,
     ];
 
+    // Content Administration.
     $items['adminic_content'] = [
       '#type'   => 'toolbar_item',
       'tab'     => [
@@ -38,10 +47,12 @@ function adminic_toolbar_toolbar() {
           'title' => t('My account'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-content'],
         ],
+        '#cache' => [
+          'contexts' => ['user',],
+        ],
       ],
       'tray'    => [
         '#heading' => t('Content'),
-        //'content' => manage_content(),
         'nodes'    => manage_nodes(),
         'terms'    => manage_terms(),
         'blocks'   => manage_blocks(),
@@ -51,6 +62,7 @@ function adminic_toolbar_toolbar() {
       '#weight' => 100,
     ];
 
+    // Modules.
     $items['adminic_extend'] = [
       '#type'   => 'toolbar_item',
       'tab'     => [
@@ -61,10 +73,14 @@ function adminic_toolbar_toolbar() {
           'title' => t('Modules'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-extend'],
         ],
+        '#cache' => [
+          'contexts' => ['user',],
+        ],
       ],
       '#weight' => 80,
     ];
 
+    // Themes.
     $items['adminic_appearance'] = [
       '#type'   => 'toolbar_item',
       'tab'     => [
@@ -75,22 +91,26 @@ function adminic_toolbar_toolbar() {
           'title' => t('Appearance'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-appearance'],
         ],
+        '#cache' => [
+          'contexts' => ['user',],
+        ],
       ],
       '#weight' => 81,
     ];
 
+    // Config Administration.
     $items['adminic_config'] = [
       '#type'   => 'toolbar_item',
       'tab'     => [
         '#type'       => 'link',
         '#title'      => t('Config'),
         '#url'        => Url::fromUserInput('/admin/config'),
-        '#cache'      => [
-          'contexts' => ['user'],
-        ],
         '#attributes' => [
           'title' => t('Config'),
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
+        ],
+        '#cache' => [
+          'contexts' => ['user',],
         ],
       ],
       'tray'    => [
@@ -110,6 +130,10 @@ function adminic_toolbar_toolbar() {
 
 }
 
+/**
+ * Implements hook_toolbar_alter();
+ * @param $items
+ */
 function adminic_toolbar_toolbar_alter(&$items) {
   unset($items['home']);
   //unset($items['contextual']);
@@ -130,21 +154,46 @@ function adminic_toolbar_toolbar_alter(&$items) {
   $items['coffee']['#weight'] = 13;
   $items['contextual']['#weight'] = 99;
   $items['user']['#weight'] = 99;
-  //$items['admin_toolbar_tools']['tab']['#title'] = t('Tools');
+  $items['admin_toolbar_tools']['tab']['#title'] = t('Tools');
 }
 
+/**
+ * Implements hook_page_attachments();
+ *
+ * @param array $attachments
+ */
 function adminic_toolbar_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'adminic_toolbar/global-styling';
 }
 
+/**
+ * Implements hook_css_alter();
+ *
+ * @param $css
+ * @param \Drupal\Core\Asset\AttachedAssetsInterface $assets
+ */
 function adminic_toolbar_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsInterface $assets) {
-  //dpm($css);
-  unset($css['core/themes/stable/css/toolbar/toolbar.menu.css']);
-  unset($css['core/themes/stable/css/toolbar/toolbar.module.css']);
-  unset($css['core/themes/stable/css/toolbar/toolbar.theme.css']);
-  unset($css['core/themes/stable/css/toolbar/toolbar.icons.theme.css']);
-  // Remove defaults.css file.
-  //unset($css[drupal_get_path('module', 'system') . '/defaults.css']);
+  // Remove Toolbar Styling
+  $toolbar_path = drupal_get_path('theme', 'stable');
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.menu.css']);
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.module.css']);
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.theme.css']);
+  unset($css[$toolbar_path . '/css/toolbar/toolbar.icons.theme.css']);
+
+  // Remove Admin Toolbar Styling
+  $admin_toolbar_path = drupal_get_path('module', 'admin_toolbar');
+  unset($css[$admin_toolbar_path . '/css/admin.toolbar.css']);
+
+  // Remove Devel Toolbar
+  $devel_path = drupal_get_path('module', 'devel');
+  unset($css[$devel_path . '/css/devel.toolbar.css']);
+
+  // Remove Admin Toolbar Asset
+  foreach ($assets as $key => $asset) {
+    if ($asset == 'admin_toolbar/toolbar.tree') {
+      unset($assets[$key]);
+    }
+  }
 }
 
 /**
@@ -159,12 +208,6 @@ function adminic_toolbar_theme() {
         'collection_url'  => NULL,
         'add_bundle_url'  => NULL,
         'add_bundle_text' => NULL,
-      ],
-    ],
-    'adminic_system'          => [
-      'variables' => [
-        'title' => NULL,
-        'links' => [],
       ],
     ],
   ];

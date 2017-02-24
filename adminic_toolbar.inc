@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 
 function manage_nodes() {
@@ -27,10 +28,11 @@ function manage_terms() {
 
 function manage_media() {
   return add_manage(
-    'media',
+    'media_entity',
     'media_bundle',
     'entity.media.add_form',
-    'view.media_library.global_media_library_page'
+    'view.media.media_page_list',
+    'provider'
   );
 }
 
@@ -113,6 +115,8 @@ function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL
     $links = [];
 
     if ($user->isAuthenticated() && $user->hasPermission($admin_permissions)) {
+      $links_cache_contexts[] = 'user';
+
       $variantions = \Drupal::entityTypeManager()->getStorage($type)->loadMultiple();
       //kint($variantions);
       foreach ($variantions as $variantion) {
@@ -171,6 +175,11 @@ function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL
       $return['#title'] = $entity->getLabel();
       $return['#attributes'] = [
         'class' => ['toolbar-menu', $type . '-add'],
+      ];
+      $return['#attributes'] = [
+        '#cache' => [
+          'contexts' => Cache::mergeContexts(array('user.roles:authenticated'), $links_cache_contexts),
+        ]
       ];
 
       return $return;

@@ -1,0 +1,20 @@
+@import "../variables";
+@import "../mixins";
+@import "../libraries/bourbon/bourbon";
+
+.toolbar-tray {
+  display: block !important;
+  background-color: $primary-color-lighten;
+  position: absolute;
+  width: $toolbar-tray-size;
+  top: 0;
+  bottom: 0;
+  left: $toolbar-tab-size;
+  @include transform(translateX(-30rem));
+  margin-top: 0 !important;
+  &.is-active {
+    display: block !important;
+    @include transform(translateX(0));
+  }
+  overflow: scroll;
+}

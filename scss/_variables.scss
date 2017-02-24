@@ -1,0 +1,13 @@
+$white: #FFF;
+$primary-color: #0678BE;
+//$primary-color: #333;
+$primary-color-lighten: lighten($primary-color, 7%);
+$primary-color-dark: darken($primary-color, 30%);
+$font-color: $white;
+$toolbar-background: $primary-color;
+
+$toolbar-tab-divider: 1px solid $primary-color-lighten;
+$toolbar-tab-link-color: $white;
+$toolbar-tab-size: 3rem;
+
+$toolbar-tray-size: 13rem;

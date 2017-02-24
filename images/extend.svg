@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>extend</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-597.000000, -250.000000)" fill-rule="nonzero" fill="#FFFFFF">
+            <g id="Manage-Icons" transform="translate(597.000000, 169.000000)">
+                <g id="extend" transform="translate(0.000000, 81.000000)">
+                    <path d="M3,17 L3,18.498 C3,18.775 3.225,19 3.502,19 L4.499,19 C4.775,19 5,18.775 5,18.498 L5,17 C5,16.041 5.801,14.727 7,14.221 L7,12.116 C4.684,12.652 3,14.97 3,17 Z M15.065,7.701 L12.535,9.599 C12.188,9.859 11.766,10 11.332,10 L9.005,10 C8.45,10 8,10.45 8,11.005 L8,14.996 C8,15.55 8.45,16 9.005,16 L11.332,16 C11.766,16 12.188,16.141 12.535,16.401 L15.066,18.299 C15.672,18.754 16.41,19 17.168,19 L19,19 L19,7 L17.168,7 C16.41,7 15.672,7.246 15.065,7.701 Z M20,9 L20,11 L23,11 L23,9 L20,9 Z M20,17 L23,17 L23,15 L20,15 L20,17 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

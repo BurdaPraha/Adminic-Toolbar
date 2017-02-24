@@ -1,0 +1,9 @@
+name: Adminic Toolbar
+description: "Adminic Toolbar"
+core: 8.x
+package: Administration
+type: module
+dependencies:
+  - toolbar
+libraries:
+  - adminic_toolbar/global-styling

@@ -1,0 +1,8 @@
+<div class="content">
+  XXXXX
+  {% if links -%}
+      {%- for item in links -%}
+         <a href="{{ item.url }}" class="list-url">{{ item.name }}</a>
+      {%- endfor -%}
+  {%- endif %}
+</div>

@@ -1,0 +1,38 @@
+@mixin section-padding() {
+  padding: $section-padding-vertical $section-padding-horizontal;
+  @include media($tablet) {
+    padding: ($section-padding-vertical * 1.2) ($section-padding-horizontal * 1.2);
+  }
+  @include media($desktop) {
+    padding: ($section-padding-vertical * 1.4) ($section-padding-horizontal * 1.4);
+  }
+  @include media($large) {
+    padding: ($section-padding-vertical * 1.6) ($section-padding-horizontal * 1.6);
+  }
+}
+
+@mixin vertical-align($position: relative) {
+  position: $position;
+  top: 50%;
+  -webkit-transform: perspective(1px) translateY(-50%);
+  -ms-transform: perspective(1px) translateY(-50%);
+  transform: perspective(1px) translateY(-50%);
+}
+
+@mixin omega-reset($nth) {
+  &:nth-child(#{$nth}) { margin-right: flex-gutter(); }
+  &:nth-child(#{$nth}+1) { clear: none }
+}
+
+@function color-diff($a, $b) {
+  $sat: saturation($a) - saturation($b);
+  $lig: lightness($a) - lightness($b);
+  $fn-sat: if($sat > 0, 'desaturate', 'saturate');
+  $fn-lig: if($lig > 0, 'darken', 'lighten');
+
+  @return (
+    adjust-hue: -(hue($a) - hue($b)),
+    #{$fn-sat}: abs($sat),
+    #{$fn-lig}: abs($lig)
+  );
+}

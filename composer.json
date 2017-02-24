@@ -1,0 +1,16 @@
+{
+    "name": "jakubhnilicka/adminic_toolbar",
+    "description": "Modified toolbar for Drupal 8.",
+    "homepage": "https://github.com/jakubhnilicka/Adminic-Toolbar",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "Jakub Hnilicka",
+            "email": "ahoj@jakubhnilicka.cz",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {},
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev"
+}

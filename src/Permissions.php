@@ -22,15 +22,15 @@ class Permissions {
   public function getPermissions() {
     $permissions = [];
     $blockCategories = [
-      'nodes',
-      'terms',
-      'blocks',
-      'media',
-      'comments',
-      'paragraphs',
-      'views',
-      'image_styles',
-      'menus',
+      'node_type',
+      'taxonomy_vocabulary',
+      'media_bundle',
+      'block_content_type',
+      'view',
+      'image_style',
+      'menu',
+      'comment_type',
+      'paragraphs_type',
     ];
 
     foreach ($blockCategories as $category) {

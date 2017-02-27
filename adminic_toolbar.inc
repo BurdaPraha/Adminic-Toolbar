@@ -108,8 +108,10 @@ function manage_comments() {
 }
 
 function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL, $crete_permissions = NULL, $add_bundle_url = NULL, $add_bundle_label = NULL) {
-  if (\Drupal::moduleHandler()->moduleExists($module) == TRUE) {
-    $user = \Drupal::currentUser();
+  $user = \Drupal::currentUser();
+
+  if (\Drupal::moduleHandler()->moduleExists($module) == TRUE && $user->hasPermission('adminic toolbar use ' . $type)) {
+
     $entity = \Drupal::entityTypeManager()->getDefinition($type);
 
     $admin_permissions = $entity->getAdminPermission();

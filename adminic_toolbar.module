@@ -53,11 +53,7 @@ function adminic_toolbar_toolbar() {
       ],
       'tray'    => [
         '#heading' => t('Content'),
-        'nodes'    => manage_nodes(),
-        'terms'    => manage_terms(),
-        'blocks'   => manage_blocks(),
-        'media'    => manage_media(),
-        'comments' => manage_comments(),
+        'conten' => get_content_manage(),
       ],
       '#weight' => 100,
     ];
@@ -119,10 +115,7 @@ function adminic_toolbar_toolbar() {
       ],
       'tray'    => [
         '#heading'     => t('Content'),
-        'paragraphs'   => manage_paragraphs(),
-        'views'        => manage_views(),
-        'image_styles' => manage_image_styles(),
-        'menus'        => manage_menus(),
+        'content' => get_config_manage(),
       ],
       '#weight' => 101,
     ];
@@ -134,6 +127,24 @@ function adminic_toolbar_toolbar() {
 
 }
 
+function get_content_manage() {
+  $content_manage = array();
+  $content_manage['nodes'] = manage_nodes();
+  $content_manage['terms'] = manage_terms();
+  $content_manage['blocks'] = manage_blocks();
+  $content_manage['media'] = manage_media();
+  $content_manage['comments'] = manage_comments();
+  return $content_manage;
+}
+
+function get_config_manage() {
+  $config_manage = array();
+  $config_manage['paragraphs'] = manage_paragraphs();
+  $config_manage['views'] = manage_views();
+  $config_manage['image_styles'] = manage_image_styles();
+  $config_manage['menus'] = manage_menus();
+  return $config_manage;
+}
 /**
  * Implements hook_toolbar_alter();
  *

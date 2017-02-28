@@ -53,7 +53,7 @@ function adminic_toolbar_toolbar() {
       ],
       'tray'    => [
         '#heading' => t('Content'),
-        'conten' => get_content_manage(),
+        'content'  => get_content_manage(),
       ],
       '#weight' => 100,
     ];
@@ -114,12 +114,12 @@ function adminic_toolbar_toolbar() {
         ],
       ],
       'tray'    => [
-        '#heading'     => t('Content'),
-        'content' => get_config_manage(),
+        '#heading' => t('Content'),
+        //'content' => get_config_manage(),
       ],
       '#weight' => 101,
     ];
-
+    //test_discovery();
     return $items;
   }
 
@@ -128,23 +128,39 @@ function adminic_toolbar_toolbar() {
 }
 
 function get_content_manage() {
-  $content_manage = array();
-  $content_manage['nodes'] = manage_nodes();
+  $blocks = test_discovery();
+
+  $return = [];
+  foreach ($blocks['content'] as $key => $block) {
+
+    $return[$key] = add_manage(
+      $block['type'],
+      $block['add_url'],
+      $block['list_url'],
+      $block['list_parametter'],
+      $block['crete_permissions'],
+      $block['add_bundle_url'],
+      $block['add_bundle_label']);
+    //kint($return);
+  }
+  //$content_manage = array();
+  /*$content_manage['nodes'] = manage_nodes();
   $content_manage['terms'] = manage_terms();
   $content_manage['blocks'] = manage_blocks();
   $content_manage['media'] = manage_media();
-  $content_manage['comments'] = manage_comments();
-  return $content_manage;
+  $content_manage['comments'] = manage_comments();*/
+  return $return;
 }
 
 function get_config_manage() {
-  $config_manage = array();
+  $config_manage = [];
   $config_manage['paragraphs'] = manage_paragraphs();
   $config_manage['views'] = manage_views();
   $config_manage['image_styles'] = manage_image_styles();
   $config_manage['menus'] = manage_menus();
   return $config_manage;
 }
+
 /**
  * Implements hook_toolbar_alter();
  *
@@ -226,4 +242,74 @@ function adminic_toolbar_theme() {
       ],
     ],
   ];
+}
+
+function test_discovery() {
+  $entities = \Drupal::entityTypeManager()->getDefinitions();
+  $path_validator = \Drupal::service('path.validator');
+  $entity_info = [];
+  foreach ($entities as $entity) {
+    $id = $entity->id();
+    $group = $entity->getGroup();
+    if ($group == 'content') {
+      //$entity_info[$group][$id]['entity_id'] = $entity->id();
+      //$entity_info[$group][$id]['entity_label'] = $entity->getLabel();
+
+      $bundle_entity_type = $entity->getBundleEntityType();
+      if ($bundle_entity_type != NULL) {
+        $entity_bundle = \Drupal::entityTypeManager()
+          ->getDefinition($bundle_entity_type);
+        $entity_info[$group][$id]['type'] = $entity_bundle->id();
+        //$entity_info[$group][$id]['bundle_label'] = $entitie_bundle->getLabel();
+        $entity_info[$group][$id]['list_url'] = NULL;
+        $entity_info[$group][$id]['add_bundle_url'] = NULL;
+        $links = array_keys($entity_bundle->getLinkTemplates());
+        //kint($entitie_bundle);
+
+        if (in_array('add-form', $links)) {
+          $add_form_url = $entity_bundle->getLinkTemplate('add-form');
+          $valid_url = $path_validator->getUrlIfValid($add_form_url);
+          if ($valid_url != FALSE) {
+            $entity_info[$group][$id]['add_bundle_url'] = $valid_url->getRouteName();
+          }
+        }
+        $entity_info[$group][$id]['add_bundle_label'] = 'Add ' . $entity->getLabel() . ' Bundle';
+        if (in_array('collection', $links)) {
+          $add_form_url = $entity_bundle->getLinkTemplate('collection');
+          $valid_url = $path_validator->getUrlIfValid($add_form_url);
+          if ($valid_url != FALSE) {
+            $entity_info[$group][$id]['list_url'] = $valid_url->getRouteName();
+          }
+        }
+        $entity_info[$group][$id]['list_parametter'] = $entity->id();
+        $entity_info[$group][$id]['add_url'] = NULL;
+        $entity_info[$group][$id]['crete_permissions'] = $entity_bundle->getAdminPermission();
+      }
+    }
+  }// Create alter function to polish or add custom entities
+  \Drupal::moduleHandler()->alter('entity_disovery', $entity_info);
+  kint($entity_info);
+  return $entity_info;
+}
+
+function adminic_toolbar_entity_disovery_alter(&$entity_info) {
+  // Node
+  $entity_info['content']['node']['list_url'] = 'system.admin_content';
+  $entity_info['content']['node']['add_bundle_url'] = 'node.type_add';
+  $entity_info['content']['node']['list_parametter'] = 'type';
+  $entity_info['content']['node']['add_url'] = 'node.add';
+  // Term
+  $entity_info['content']['taxonomy_term']['add_bundle_url'] = 'entity.taxonomy_vocabulary.add_form';
+  $entity_info['content']['taxonomy_term']['add_bundle_label'] = 'Add Vocabulary';
+  $entity_info['content']['taxonomy_term']['add_url'] = 'entity.taxonomy_term.add_form';
+  // Media
+  $entity_info['content']['media']['add_url'] = 'entity.media.add_form';
+  $entity_info['content']['media']['list_url'] = 'view.media.media_page_list';
+  $entity_info['content']['media']['addlist_parametter_url'] = 'provider';
+  $entity_info['content']['media']['create_permissions'] = 'create media';
+  // Comment
+  $entity_info['content']['comment']['list_url'] = 'comment.admin';
+  // Paragraphs
+  $entity_info['content']['paragraph']['add_bundle_url'] = 'paragraphs.type_add';
+
 }

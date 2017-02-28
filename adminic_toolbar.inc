@@ -107,10 +107,12 @@ function manage_comments() {
   );
 }
 
-function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL, $crete_permissions = NULL, $add_bundle_url = NULL, $add_bundle_label = NULL) {
+//function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL, $crete_permissions = NULL, $add_bundle_url = NULL, $add_bundle_label = NULL) {
+function add_manage($type, $add_url, $list_url, $list_parametter = NULL, $crete_permissions = NULL, $add_bundle_url = NULL, $add_bundle_label = NULL) {
   $user = \Drupal::currentUser();
 
-  if (\Drupal::moduleHandler()->moduleExists($module) == TRUE && $user->hasPermission('adminic toolbar use ' . $type)) {
+  //if (\Drupal::moduleHandler()->moduleExists($module) == TRUE && $user->hasPermission('adminic toolbar use ' . $type)) {
+  //if ($user->hasPermission('adminic toolbar use ' . $type)) {
 
     $entity = \Drupal::entityTypeManager()->getDefinition($type);
 
@@ -120,8 +122,12 @@ function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL
     if(is_null($list_parametter)) {
       $list_parametter = $type;
     }
-
-    $collection_url = $link_templates['collection'];
+    if(in_array('collection', $link_templates)) {
+      $collection_url = $link_templates['collection'];
+    }
+    else {
+      $collection_url = NULL;
+    }
 
     $links = [];
 
@@ -204,7 +210,7 @@ function add_manage($module, $type, $add_url, $list_url, $list_parametter = NULL
 
       return $return;
     }
-  }
+  //}
 
   return NULL;
 }

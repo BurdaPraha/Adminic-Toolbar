@@ -13,6 +13,7 @@ function adminic_toolbar_toolbar() {
   $user = \Drupal::currentUser();
   if ($user->hasPermission('access toolbar')) {
 
+    $manage = get_manage();
     $items = [];
 
     // Home Button.
@@ -53,7 +54,7 @@ function adminic_toolbar_toolbar() {
       ],
       'tray'    => [
         '#heading' => t('Content'),
-        'content'  => get_content_manage(),
+        'content'  => $manage['content'],
       ],
       '#weight' => 100,
     ];
@@ -114,12 +115,11 @@ function adminic_toolbar_toolbar() {
         ],
       ],
       'tray'    => [
-        '#heading' => t('Content'),
-        //'content' => get_config_manage(),
+        '#heading' => t('Configuration'),
+        'content' => $manage['configuration'],
       ],
       '#weight' => 101,
     ];
-    //test_discovery();
     return $items;
   }
 
@@ -127,13 +127,13 @@ function adminic_toolbar_toolbar() {
 
 }
 
-function get_content_manage() {
+function get_manage() {
   $blocks = test_discovery();
 
   $return = [];
   foreach ($blocks['content'] as $key => $block) {
 
-    $return[$key] = add_manage(
+    $return['content'][$key] = add_manage(
       $block['type'],
       $block['add_url'],
       $block['list_url'],
@@ -141,25 +141,22 @@ function get_content_manage() {
       $block['crete_permissions'],
       $block['add_bundle_url'],
       $block['add_bundle_label']);
-    //kint($return);
   }
-  //$content_manage = array();
-  /*$content_manage['nodes'] = manage_nodes();
-  $content_manage['terms'] = manage_terms();
-  $content_manage['blocks'] = manage_blocks();
-  $content_manage['media'] = manage_media();
-  $content_manage['comments'] = manage_comments();*/
+
+  foreach ($blocks['configuration'] as $key => $block) {
+
+    $return['configuration'][$key] = add_manage(
+      $block['type'],
+      $block['add_url'],
+      $block['list_url'],
+      $block['list_parametter'],
+      $block['crete_permissions'],
+      $block['add_bundle_url'],
+      $block['add_bundle_label']);
+  }
   return $return;
 }
 
-function get_config_manage() {
-  $config_manage = [];
-  $config_manage['paragraphs'] = manage_paragraphs();
-  $config_manage['views'] = manage_views();
-  $config_manage['image_styles'] = manage_image_styles();
-  $config_manage['menus'] = manage_menus();
-  return $config_manage;
-}
 
 /**
  * Implements hook_toolbar_alter();
@@ -248,6 +245,8 @@ function test_discovery() {
   $entities = \Drupal::entityTypeManager()->getDefinitions();
   $path_validator = \Drupal::service('path.validator');
   $entity_info = [];
+  //kint($entities);
+  // Content Entities
   foreach ($entities as $entity) {
     $id = $entity->id();
     $group = $entity->getGroup();
@@ -284,15 +283,61 @@ function test_discovery() {
         $entity_info[$group][$id]['list_parametter'] = $entity->id();
         $entity_info[$group][$id]['add_url'] = NULL;
         $entity_info[$group][$id]['crete_permissions'] = $entity_bundle->getAdminPermission();
+        unset($entities[$entity_bundle->id()]);
       }
     }
-  }// Create alter function to polish or add custom entities
+  }
+
+  $config_entities = [
+    'block',
+    'image_style',
+    'menu',
+    'view',
+    'user_role',
+    'menu_link_content',
+    'filter_format',
+    'date_format'
+  ];
+  \Drupal::moduleHandler()->alter('entity_disovery_config', $config_entities);
+  // Config entities
+  foreach ($entities as $entity) {
+    $id = $entity->id();
+    $group = $entity->getGroup();
+    if ($group == 'configuration' && in_array($id, $config_entities)) {
+      $entity_info[$group][$id]['type'] = $entity->id();
+      $entity_info[$group][$id]['list_url'] = NULL;
+      $entity_info[$group][$id]['add_bundle_url'] = NULL;
+      $links = array_keys($entity_bundle->getLinkTemplates());
+
+      if (in_array('add-form', $links)) {
+        $add_form_url = $entity->getLinkTemplate('add-form');
+        $valid_url = $path_validator->getUrlIfValid($add_form_url);
+        if ($valid_url != FALSE) {
+          $entity_info[$group][$id]['add_bundle_url'] = $valid_url->getRouteName();
+        }
+      }
+      $entity_info[$group][$id]['add_bundle_label'] = 'Add ' . $entity->getLabel() . ' Type';
+      if (in_array('collection', $links)) {
+        $add_form_url = $entity->getLinkTemplate('collection');
+        $valid_url = $path_validator->getUrlIfValid($add_form_url);
+        if ($valid_url != FALSE) {
+          $entity_info[$group][$id]['list_url'] = $valid_url->getRouteName();
+        }
+      }
+      $entity_info[$group][$id]['list_parametter'] = $entity->id();
+      $entity_info[$group][$id]['add_url'] = NULL;
+      $entity_info[$group][$id]['crete_permissions'] = $entity->getAdminPermission();
+      unset($entities[$entity_bundle->id()]);
+    }
+  }
+
   \Drupal::moduleHandler()->alter('entity_disovery', $entity_info);
-  kint($entity_info);
+  //kint($entity_info);
   return $entity_info;
 }
 
 function adminic_toolbar_entity_disovery_alter(&$entity_info) {
+  // Modify Content
   // Node
   $entity_info['content']['node']['list_url'] = 'system.admin_content';
   $entity_info['content']['node']['add_bundle_url'] = 'node.type_add';
@@ -311,5 +356,28 @@ function adminic_toolbar_entity_disovery_alter(&$entity_info) {
   $entity_info['content']['comment']['list_url'] = 'comment.admin';
   // Paragraphs
   $entity_info['content']['paragraph']['add_bundle_url'] = 'paragraphs.type_add';
+  // Block
+  $entity_info['content']['block_content']['add_bundle_url'] = 'block_content.type_add';
+  $entity_info['content']['block_content']['create_permissions'] = 'administer blocks';
+  $entity_info['content']['block_content']['add_url'] = 'block_content.add_form';
+  $entity_info['content']['block_content']['list_url'] = 'entity.block_content.collection';
+  // Crop
+  $entity_info['content']['crop']['add_bundle_url'] = 'crop.type_add';
 
+
+  // Modify Configuration
+  $entity_info['configuration']['view']['list_url'] = NULL;
+  $entity_info['configuration']['view']['add_bundle_url'] = 'views_ui.add';
+  $entity_info['configuration']['view']['add_bundle_label'] = 'Add View';
+  $entity_info['configuration']['image_style']['add_bundle_url'] = 'image.style_add';
+  $entity_info['configuration']['image_style']['add_bundle_label'] = 'Add Image Style';
+  $entity_info['configuration']['menu']['add_bundle_label'] = 'Add Menu';
+  $entity_info['configuration']['menu']['add_url'] = 'entity.menu.add_form';
+  $entity_info['configuration']['menu']['list_url'] = 'entity.menu.edit_form';
+  $entity_info['configuration']['menu']['create_permissions'] = 'administer menu';
+  $entity_info['configuration']['user_role']['list_url'] = NULL;
+  $entity_info['configuration']['image_style']['list_url'] = NULL;
+  $entity_info['configuration']['filter_format']['list_url'] = NULL;
+  $entity_info['configuration']['block']['list_url'] = NULL;
+  $entity_info['configuration']['date_format']['list_url'] = 'entity.date_format.collection';
 }

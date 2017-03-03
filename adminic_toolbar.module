@@ -128,7 +128,7 @@ function adminic_toolbar_toolbar() {
 }
 
 function get_manage() {
-  $blocks = test_discovery();
+  $blocks = _adminic_toolbar_entity_discovery();
 
   $return = [];
   foreach ($blocks['content'] as $key => $block) {
@@ -241,7 +241,7 @@ function adminic_toolbar_theme() {
   ];
 }
 
-function test_discovery() {
+function _adminic_toolbar_entity_discovery() {
   $entities = \Drupal::entityTypeManager()->getDefinitions();
   $path_validator = \Drupal::service('path.validator');
   $entity_info = [];

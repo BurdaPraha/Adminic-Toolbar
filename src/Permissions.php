@@ -21,17 +21,14 @@ class Permissions {
    */
   public function getPermissions() {
     $permissions = [];
-    $blockCategories = [
-      'node_type',
-      'taxonomy_vocabulary',
-      'media_bundle',
-      'block_content_type',
-      'view',
-      'image_style',
-      'menu',
-      'comment_type',
-      'paragraphs_type',
-    ];
+    $entity_discovery = _adminic_toolbar_entity_discovery();
+    $blockCategories = array();
+    foreach ($entity_discovery['content'] as $config_key => $config) {
+      $blockCategories[] = $config_key;
+    }
+    foreach ($entity_discovery['configuration'] as $config_key => $config) {
+      $blockCategories[] = $config_key;
+    }
 
     foreach ($blockCategories as $category) {
       $permissions += [

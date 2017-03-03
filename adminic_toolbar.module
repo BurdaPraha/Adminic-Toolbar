@@ -1,13 +1,12 @@
 <?php
 
 use Drupal\Core\Url;
+use Drupal\Core\Asset\AttachedAssetsInterface;
 
 include 'adminic_toolbar.inc';
 
 /**
- * Implements hook_toolbar();
- *
- * @return array|null
+ * Implements hook_toolbar().
  */
 function adminic_toolbar_toolbar() {
   $user = \Drupal::currentUser();
@@ -28,7 +27,7 @@ function adminic_toolbar_toolbar() {
           'class' => ['front', 'toolbar-icon', 'toolbar-icon-escape-admin'],
         ],
         '#cache'      => [
-          'contexts' => ['user',],
+          'contexts' => ['user'],
         ],
       ],
       '#wrapper_attributes' => [
@@ -49,7 +48,7 @@ function adminic_toolbar_toolbar() {
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-content'],
         ],
         '#cache'      => [
-          'contexts' => ['user',],
+          'contexts' => ['user'],
         ],
       ],
       'tray'    => [
@@ -72,7 +71,7 @@ function adminic_toolbar_toolbar() {
             'class' => ['toolbar-icon', 'toolbar-icon-adminic-extend'],
           ],
           '#cache'      => [
-            'contexts' => ['user',],
+            'contexts' => ['user'],
           ],
         ],
         '#weight' => 80,
@@ -92,7 +91,7 @@ function adminic_toolbar_toolbar() {
             'class' => ['toolbar-icon', 'toolbar-icon-adminic-appearance'],
           ],
           '#cache'      => [
-            'contexts' => ['user',],
+            'contexts' => ['user'],
           ],
         ],
         '#weight' => 81,
@@ -111,12 +110,12 @@ function adminic_toolbar_toolbar() {
           'class' => ['toolbar-icon', 'toolbar-icon-adminic-config'],
         ],
         '#cache'      => [
-          'contexts' => ['user',],
+          'contexts' => ['user'],
         ],
       ],
       'tray'    => [
         '#heading' => t('Configuration'),
-        'content' => $manage['configuration'],
+        'content'  => $manage['configuration'],
       ],
       '#weight' => 101,
     ];
@@ -138,7 +137,7 @@ function get_manage() {
       $block['add_url'],
       $block['list_url'],
       $block['list_parametter'],
-      $block['crete_permissions'],
+      $block['create_permissions'],
       $block['add_bundle_url'],
       $block['add_bundle_label']);
   }
@@ -150,20 +149,17 @@ function get_manage() {
       $block['add_url'],
       $block['list_url'],
       $block['list_parametter'],
-      $block['crete_permissions'],
+      $block['create_permissions'],
       $block['add_bundle_url'],
       $block['add_bundle_label']);
   }
   return $return;
 }
 
-
 /**
- * Implements hook_toolbar_alter();
- *
- * @param $items
+ * Implements hook_toolbar_alter().
  */
-function adminic_toolbar_toolbar_alter(&$items) {
+function adminic_toolbar_toolbar_alter(array &$items) {
   unset($items['home']);
   unset($items['admin_toolbar_tools']);
   $items['user']['#wrapper_attributes']['class'][] = 'right';
@@ -186,21 +182,16 @@ function adminic_toolbar_toolbar_alter(&$items) {
 }
 
 /**
- * Implements hook_page_attachments();
- *
- * @param array $attachments
+ * Implements hook_page_attachments().
  */
 function adminic_toolbar_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'adminic_toolbar/global-styling';
 }
 
 /**
- * Implements hook_css_alter();
- *
- * @param $css
- * @param \Drupal\Core\Asset\AttachedAssetsInterface $assets
+ * Implements hook_css_alter().
  */
-function adminic_toolbar_css_alter(&$css, \Drupal\Core\Asset\AttachedAssetsInterface $assets) {
+function adminic_toolbar_css_alter(array &$css, AttachedAssetsInterface $assets) {
   // Remove Toolbar Styling
   $toolbar_path = drupal_get_path('theme', 'stable');
   unset($css[$toolbar_path . '/css/toolbar/toolbar.menu.css']);
@@ -245,25 +236,18 @@ function _adminic_toolbar_entity_discovery() {
   $entities = \Drupal::entityTypeManager()->getDefinitions();
   $path_validator = \Drupal::service('path.validator');
   $entity_info = [];
-  //kint($entities);
   // Content Entities
   foreach ($entities as $entity) {
     $id = $entity->id();
     $group = $entity->getGroup();
     if ($group == 'content') {
-      //$entity_info[$group][$id]['entity_id'] = $entity->id();
-      //$entity_info[$group][$id]['entity_label'] = $entity->getLabel();
-
       $bundle_entity_type = $entity->getBundleEntityType();
-      if ($bundle_entity_type != NULL) {
-        $entity_bundle = \Drupal::entityTypeManager()
-          ->getDefinition($bundle_entity_type);
+      if (!empty($bundle_entity_type)) {
+        $entity_bundle = \Drupal::entityTypeManager()->getDefinition($bundle_entity_type);
         $entity_info[$group][$id]['type'] = $entity_bundle->id();
-        //$entity_info[$group][$id]['bundle_label'] = $entitie_bundle->getLabel();
         $entity_info[$group][$id]['list_url'] = NULL;
         $entity_info[$group][$id]['add_bundle_url'] = NULL;
         $links = array_keys($entity_bundle->getLinkTemplates());
-        //kint($entitie_bundle);
 
         if (in_array('add-form', $links)) {
           $add_form_url = $entity_bundle->getLinkTemplate('add-form');
@@ -294,9 +278,8 @@ function _adminic_toolbar_entity_discovery() {
     'menu',
     'view',
     'user_role',
-    'menu_link_content',
     'filter_format',
-    'date_format'
+    'date_format',
   ];
   \Drupal::moduleHandler()->alter('entity_disovery_config', $config_entities);
   // Config entities
@@ -332,7 +315,7 @@ function _adminic_toolbar_entity_discovery() {
   }
 
   \Drupal::moduleHandler()->alter('entity_disovery', $entity_info);
-  //kint($entity_info);
+
   return $entity_info;
 }
 
@@ -363,7 +346,6 @@ function adminic_toolbar_entity_disovery_alter(&$entity_info) {
   $entity_info['content']['block_content']['list_url'] = 'entity.block_content.collection';
   // Crop
   $entity_info['content']['crop']['add_bundle_url'] = 'crop.type_add';
-
 
   // Modify Configuration
   $entity_info['configuration']['view']['list_url'] = NULL;
